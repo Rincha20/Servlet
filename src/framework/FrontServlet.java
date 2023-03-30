@@ -17,15 +17,7 @@ import etu2039.framework.Mapping;
 
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrls = new HashMap<>();
-
-    public void setMappingUrls(HashMap<String, Mapping> mappingUrls) {
-        this.mappingUrls = mappingUrls;
-    }
-
-    public HashMap<String, Mapping> getMappingUrls() {
-        return mappingUrls;
-    }
-
+    
     @Override
     public void init() throws ServletException{
         try {
@@ -41,14 +33,14 @@ public class FrontServlet extends HttpServlet {
             for (Class<?> clazz : classes) {
                 Method[] methods = clazz.getDeclaredMethods();
                 for (Method method : methods) {
-                    map.put(method.getAnnotation(Url.class).url(), new Mapping(clazz.getName(), method.getName())); 
+                    if (method.isAnnotationPresent(annotationClass)) {
+                        map.put(method.getAnnotation(Url.class).url(), new Mapping(clazz.getName(), method.getName())); 
+                    }
                 }
             }
             setMappingUrls(map);
             
         } catch (Exception e) {
-            System.out.println(e.getMessage());;
-            System.out.println(e.getCause());;
             e.printStackTrace();
         }
     }
@@ -76,16 +68,7 @@ public class FrontServlet extends HttpServlet {
                             if (fileName.endsWith(".class")) {
                                 String className = packageName + '.' + fileName.substring(0, fileName.length() - 6);
                                 Class<?> clazz = Class.forName(className);
-                                Method[] methods = clazz.getDeclaredMethods();
-                                for (Method method : methods) {
-                                    if (method.isAnnotationPresent(annotationClass)) {
-                                        classes.add(clazz);
-                                        break;
-                                    }
-                                }
-                                if (clazz.isAnnotationPresent(annotationClass)) {
-                                    classes.add(clazz);
-                                }
+                                classes.add(clazz);
                             }
                         } else if (f.isDirectory()) {
                             String subPackageName = packageName + '.' + f.getName();
@@ -109,26 +92,19 @@ public class FrontServlet extends HttpServlet {
             request.setAttribute("url",url);
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
-            out.println(url);
-
-            // if (getMappingUrls() != null) {
+            out.println("L'url est: " + url);
+            out.println();
             try {
-                for(Map.Entry<String, Mapping> entry : getMappingUrls().entrySet()){
-                    String key = entry.getKey();
-                    Mapping value = entry.getValue();
-                    out.println(key + value.getClassName() + value.getMethod() );
+                if (getMappingUrls() != null) {
+                    for(Map.Entry<String, Mapping> entry : getMappingUrls().entrySet()){
+                        String key = entry.getKey();
+                        Mapping value = entry.getValue();
+                        out.println(key + "    " + value.getClassName() + "    " + value.getMethod());
+                    }
                 }
             } catch (Exception e) {
-                // TODO: handle exception
-                out.println(e.getMessage());
-                out.println(e.getCause());
                 e.printStackTrace(out);
             }
-            // } else {
-            //     out.println("erreur");
-            // }
-            // RequestDispatcher dispat=request.getRequestDispatcher("control.jsp");
-            // dispat.forward(request,response);
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -140,4 +116,13 @@ public class FrontServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
+    public void setMappingUrls(HashMap<String, Mapping> mappingUrls) {
+        this.mappingUrls = mappingUrls;
+    }
+
+    public HashMap<String, Mapping> getMappingUrls() {
+        return mappingUrls;
+    }
+
 }

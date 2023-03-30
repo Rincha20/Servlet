@@ -12,7 +12,6 @@ import etu2039.framework.servlet.FrontServlet;
 public class Main {
     
     public static void main(String[] args) throws ClassNotFoundException, IOException {
-        FrontServlet ft = new FrontServlet();
         Class<? extends Annotation> annotationClass = Url.class; // La classe d'annotation que vous voulez chercher
         
         List<Class<?>> classes = new ArrayList<Class<?>>();
@@ -33,9 +32,12 @@ public class Main {
             // System.out.println("La classe " + clazz.getName() + " a l'annotation " + annotationClass.getName());
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                System.out.println(method.getAnnotation(Url.class).url()); 
-                System.out.println(clazz.getName());
-                System.out.println(method.getName());
+                if (method.isAnnotationPresent(annotationClass)) {
+                    System.out.println(method);
+                    System.out.println(method.getAnnotation(Url.class).url()); 
+                    System.out.println(clazz.getName());
+                    System.out.println(method.getName());
+                }
             }
             }
     }
@@ -52,6 +54,7 @@ public class Main {
         for (URL resource : resourceList) {
             if (resource != null) {
                 String file = resource.getFile();
+                System.out.println(file);
                 if (file.contains("!")) {
                     file = file.substring(0, file.indexOf("!"));
                 }
@@ -61,6 +64,7 @@ public class Main {
 
                 if (files != null) {
                     for (File f : files) {
+                        // System.out.println(f);
                         if (f.isFile()) {
                             String fileName = f.getName();
                             if (fileName.endsWith(".class")) {
@@ -68,21 +72,20 @@ public class Main {
                                 // System.out.println(className);
                                 Class<?> clazz = Class.forName(className);
                                 // System.out.println(clazz);
-                                Method[] methods = clazz.getDeclaredMethods();
-                                for (Method method : methods) {
-                                    // System.out.println(method);
-                                    if (method.isAnnotationPresent(annotationClass)) {
                                         classes.add(clazz);
-                                        break;
-                                    }
-                                }
-                                if (clazz.isAnnotationPresent(annotationClass)) {
-                                    classes.add(clazz);
-                                }
+                                    
+                                
+                                // if (clazz.isAnnotationPresent(annotationClass)) {
+                                //     System.out.println(clazz);
+                                //     classes.add(clazz);
+                                // }
                             }
                         } else if (f.isDirectory()) {
                             String subPackageName = packageName + '.' + f.getName();
                             List<Class<?>> subAnnotatedClasses = findAnnotatedClasses(subPackageName, annotationClass);
+                            for (Class<?> c : subAnnotatedClasses) {
+                                System.out.println(c);
+                            }
                             classes.addAll(subAnnotatedClasses);
                         }
                     }
