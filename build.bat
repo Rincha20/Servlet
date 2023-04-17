@@ -56,7 +56,12 @@ set war_file=testFramework.war
 
 jar cvf %war_file% *
 
-MOVE /Y testFramework.war "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps"
+IF EXIST "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework.war" (
+    DEL "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework.war"
+    MOVE /Y testFramework.war "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps"
+) ELSE (
+    MOVE /Y testFramework.war "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps"
+)
 
 
 
