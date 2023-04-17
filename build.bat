@@ -4,12 +4,13 @@ setlocal
 @REM Compilation des java dans framework/src
 javac -d . framework/src/annotation/Url.java
 javac -d . framework/src/framework/Mapping.java
+javac -d . framework/src/framework/View.java
 javac -d . framework/src/framework/FrontServlet.java
 
 set source_dir=classes
 cd %source_dir%
 
-@REM Deplacement des ces fichiers compiles vers classes, s'ils existent deja alors les supprimer avant de les deplacer
+@REM Deplacement de ces fichiers compiles vers classes, s'ils existent deja alors les supprimer avant de les deplacer
 IF EXIST annotation (
     RD /S /Q annotation
     MOVE /Y ..\annotation .
@@ -55,6 +56,10 @@ cd ../../
 set war_file=testFramework.war
 
 jar cvf %war_file% *
+
+IF EXIST "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework" (
+    RD /S /Q "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework"
+) 
 
 IF EXIST "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework.war" (
     DEL "C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\testFramework.war"

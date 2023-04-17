@@ -14,6 +14,7 @@ import annotation.Url;
 import java.util.*;
 
 import etu2039.framework.Mapping;
+import etu2039.framework.vue.View;
 
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrls = new HashMap<>();
@@ -95,13 +96,26 @@ public class FrontServlet extends HttpServlet {
             out.println("L'url est: " + url);
             out.println();
             try {
+                // Mapping mapping = this.getMappingUrls().get(url);
                 if (getMappingUrls() != null) {
                     for(Map.Entry<String, Mapping> entry : getMappingUrls().entrySet()){
                         String key = entry.getKey();
                         Mapping value = entry.getValue();
                         out.println(key + "    " + value.getClassName() + "    " + value.getMethod());
+                    
+                        Object target = Class.forName(value.getClassName()).getConstructor().newInstance();
+                        Method method = target.getClass().getDeclaredMethod(value.getMethod());
+                        Object result = method.invoke(target);
+                        if (result instanceof View view) {
+                            String vue = view.getView();
+                            RequestDispatcher dispatcher = request.getRequestDispatcher(vue);
+                            dispatcher.forward(request, response);
+                        } else {
+                            out.println("oh");
+                        }
                     }
                 }
+                   
             } catch (Exception e) {
                 e.printStackTrace(out);
             }
