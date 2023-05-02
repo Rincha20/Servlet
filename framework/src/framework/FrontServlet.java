@@ -93,15 +93,14 @@ public class FrontServlet extends HttpServlet {
             request.setAttribute("url",url);
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
-            out.println("L'url est: " + url);
+            // out.println("L'url est: " + url);
             out.println();
             try {
-                // Mapping mapping = this.getMappingUrls().get(url);
                 if (getMappingUrls() != null) {
                     for(Map.Entry<String, Mapping> entry : getMappingUrls().entrySet()){
                         String key = entry.getKey();
                         Mapping value = entry.getValue();
-                        out.println(key + "    " + value.getClassName() + "    " + value.getMethod());
+                        // out.println(key + "    " + value.getClassName() + "    " + value.getMethod());
                     
                         Object target = Class.forName(value.getClassName()).getConstructor().newInstance();
                         Method method = target.getClass().getDeclaredMethod(value.getMethod());
@@ -109,9 +108,11 @@ public class FrontServlet extends HttpServlet {
                         if (result instanceof View view) {
                             String vue = view.getView();
                             RequestDispatcher dispatcher = request.getRequestDispatcher(vue);
+                            HashMap<String,Object> data= view.getData();
+                            for(HashMap.Entry<String,Object> d : data.entrySet()){
+                                request.setAttribute(d.getKey(), d.getValue());
+                            }
                             dispatcher.forward(request, response);
-                        } else {
-                            out.println("oh");
                         }
                     }
                 }
