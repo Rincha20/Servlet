@@ -3,6 +3,7 @@ package etu2039.framework.servlet;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -83,6 +84,36 @@ public class FrontServlet extends HttpServlet {
         return classes;
     }
 
+    public void setAttributes(HttpServletRequest request, Object target) throws ServletException, IOException{
+        try {
+            Enumeration<String> parameterNames = request.getParameterNames();
+            Field[] classFields = target.getClass().getDeclaredFields();
+            while (parameterNames.hasMoreElements()) {
+                String parameterName = parameterNames.nextElement();
+                for (Field field : classFields) {
+                    if (field.getName().equalsIgnoreCase(parameterName)) {
+                        // Récupérer la valeur saisie dans le formulaire
+                        String parameterValue = request.getParameter(parameterName);
+                        
+                        // Convertir la valeur dans le type approprié de l'attribut de la classe si nécessaire
+                        
+                        // Utiliser la réflexion pour définir la valeur de l'attribut correspondant dans la classe
+                        field.setAccessible(true); // Permettre l'accès à un attribut privé si nécessaire
+                        field.set(target, parameterValue);
+                        
+                        // Vous pouvez également gérer les conversions de type ou les validations supplémentaires ici
+                        
+                        break; // Sortir de la boucle pour passer au prochain attribut du formulaire
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+    }
+
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
             String url=request.getServletPath();
@@ -104,6 +135,8 @@ public class FrontServlet extends HttpServlet {
                     
                         Object target = Class.forName(value.getClassName()).getConstructor().newInstance();
                         Method method = target.getClass().getDeclaredMethod(value.getMethod());
+                        this.setAttributes(request, target);
+
                         Object result = method.invoke(target);
                         if (result instanceof View view) {
                             String vue = view.getView();
