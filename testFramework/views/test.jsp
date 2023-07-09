@@ -15,8 +15,8 @@
     <h1>Liste des departements</h1>
         <% for(int i=0; i<listDept.size(); i++){ %>
             <p>
-                Nom du departement: <% out.print(listDept.get(i).getNomDept()); %>
-                Le manager: <% out.print(listDept.get(i).getManager()); %>
+                Nom du departement: <% out.print(listDept.get(i).getnom()); %>
+                Le manager: <% out.print(listDept.get(i).getmanager()); %>
             </p>
         <% } %>
 </body>

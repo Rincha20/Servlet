@@ -7,6 +7,12 @@ javac -d . framework/src/framework/Mapping.java
 javac -d . framework/src/framework/View.java
 javac -d . framework/src/framework/FrontServlet.java
 
+IF EXIST classes (
+    RD /S /Q classes
+) ELSE (
+    mkdir classes
+)
+
 set source_dir=classes
 cd %source_dir%
 

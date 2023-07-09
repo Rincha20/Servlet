@@ -6,24 +6,26 @@ import annotation.Url;
 import etu2039.framework.vue.View;
 
 public class Dept {
-    String nomDept;
+    String nom;
     String manager;
 
     public Dept(){}
 
-    public Dept(String nomDept, String manager) {
-        setNomDept(nomDept);
-        setManager(manager);
+    public Dept(String nom, String manager) {
+        setnom(nom);
+        setmanager(manager);
     }
 
     @Url(url="dept-all")
     public View allDept(){
         Dept d1= new Dept("Departement 1", "RAKOTO");
         Dept d2 = new Dept("Departement 2", "RABE");
-        ArrayList<Dept> listDept = new ArrayList<Dept>();
+        Dept d3 = new Dept(this.getnom(), this.getmanager());
+        ArrayList<Dept> listDept= new ArrayList<Dept>();
         listDept.add(d1);
         listDept.add(d2);
-        View vue = new View("views/test.jsp");
+        listDept.add(d3);
+        View vue = new View("test.jsp");
         vue.addItem("listDept", listDept);
         return vue;
     }
@@ -33,19 +35,25 @@ public class Dept {
     //     System.out.println("Effacer dept"); 
     // }
 
-    public String getNomDept() {
-        return nomDept;
+    @Url(url="addDept")
+    public void save(){
+       System.out.println("nom: "+ getnom());
+       System.out.println("manager: "+ getmanager());
     }
 
-    public void setNomDept(String nomDept) {
-        this.nomDept = nomDept;
+    public String getnom() {
+        return nom;
     }
 
-    public String getManager() {
+    public void setnom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getmanager() {
         return manager;
     }
 
-    public void setManager(String manager) {
+    public void setmanager(String manager) {
         this.manager = manager;
     }
 }
